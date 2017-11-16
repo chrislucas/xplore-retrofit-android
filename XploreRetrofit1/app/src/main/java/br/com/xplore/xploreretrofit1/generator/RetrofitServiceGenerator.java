@@ -1,6 +1,7 @@
 package br.com.xplore.xploreretrofit1.generator;
 
 import okhttp3.OkHttpClient;
+import retrofit2.Converter;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -10,16 +11,14 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitServiceGenerator {
 
-
-    private static Retrofit.Builder builder= new Retrofit
-            .Builder()
-            .baseUrl("")
-            .addConverterFactory(GsonConverterFactory.create());
-
-    private static Retrofit retrofit = builder.build();
-
-
-    private static OkHttpClient okHttpClient;
-
+    public static <Clazz> Clazz createServer(Class<Clazz> service
+            , String baseURL, Converter.Factory converterFactory) {
+        Retrofit.Builder retrofitBuilder = new Retrofit
+                .Builder()
+                .baseUrl(baseURL)
+                .addConverterFactory(converterFactory);
+        OkHttpClient.Builder okHttpBuilder = new OkHttpClient.Builder();
+        return retrofitBuilder.client(okHttpBuilder.build()).build().create(service);
+    }
 
 }
