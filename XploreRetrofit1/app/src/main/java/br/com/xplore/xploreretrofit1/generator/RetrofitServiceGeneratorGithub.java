@@ -3,6 +3,7 @@ package br.com.xplore.xploreretrofit1.generator;
 import com.wealdtech.hawk.HawkClientConfiguration;
 import com.wealdtech.hawk.HawkCredentials;
 
+import br.com.xplore.xploreretrofit1.interceptors.HawkAuthenticationInterceptor;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -29,14 +30,21 @@ public class RetrofitServiceGeneratorGithub {
             .setLevel(HttpLoggingInterceptor.Level.BODY);
 
     public static <Clazz> Clazz createServer(Class<Clazz> serviceClass) {
+        /**
+         * Devemos garantir que a instancia estatica de Retrofit nao esta
+         * adicionando variaveis vezes um interceptador. A linha abaixo
+         * verifica isso.
+         * */
         if( ! okHttpBuilder.interceptors().contains(loggingInterceptor) ) {
             okHttpBuilder.addInterceptor(loggingInterceptor);
-            retrofit = retrofitBuilder
-                    .client(okHttpBuilder.build()).build();
+            retrofit = retrofitBuilder.client(okHttpBuilder.build()).build();
         }
         return retrofit.create(serviceClass);
     }
 
+    public static void redefineBaseUrl(String baseURL) {
+        retrofitBuilder.baseUrl(baseURL);
+    }
 
     /**
      * Hawk auth
@@ -45,7 +53,13 @@ public class RetrofitServiceGeneratorGithub {
     public static <Clazz> Clazz createServerWithCredentials(Class<Clazz> serviceClass
             , HawkCredentials credentials) {
         if(credentials != null) {
-
+            HawkAuthenticationInterceptor hawkAuthenticationInterceptor
+                    = new HawkAuthenticationInterceptor(credentials);
+            if( ! okHttpBuilder.interceptors().contains(hawkAuthenticationInterceptor) ) {
+                okHttpBuilder.interceptors().add(hawkAuthenticationInterceptor);
+                retrofitBuilder.client(okHttpBuilder.build());
+                retrofit = retrofitBuilder.client(okHttpBuilder.build()).build();
+            }
         }
         return retrofit.create(serviceClass);
     }
