@@ -9,10 +9,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
 
+import br.com.xplore.xploreretrofit1.endpoint.EndpointGithubSearchRepo;
 import br.com.xplore.xploreretrofit1.endpoint.EndpointGithubService;
 import br.com.xplore.xploreretrofit1.entities.GithubRepo;
 import br.com.xplore.xploreretrofit1.generator.RetrofitServiceGenerator;
 import br.com.xplore.xploreretrofit1.generator.RetrofitServiceGeneratorGithub;
+import okhttp3.HttpUrl;
+import okhttp3.Interceptor;
+import okhttp3.Request;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -114,6 +118,7 @@ public class GithubSearchRepoImpl {
         RetrofitServiceGenerator<EndpointGithubService> serviceGenerator = null;
         serviceGenerator = RetrofitServiceGenerator.newInstance(EndpointGithubService.class
                 , GsonConverterFactory.create(), "http://api.github.com/");
+
         Call<ResponseBody> call = serviceGenerator.getService().searchUsers(queryString);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -128,5 +133,50 @@ public class GithubSearchRepoImpl {
                 Log.i("EXCEPTION_RQ", t.getMessage());
             }
         });
+    }
+
+    /**
+     * Uma forma de interceptar o request e adicionar um parametro a query string de todos
+     * os endpoints vinculados a uma instancia do retrofit
+     * */
+    public void exploreInterceptor(final String queryParameter) {
+        RetrofitServiceGenerator<EndpointGithubSearchRepo> serviceGenerator = RetrofitServiceGenerator
+                .newInstance(EndpointGithubSearchRepo.class, GsonConverterFactory.create()
+                        , "http://api.github.com/");
+        Interceptor interceptor  = new Interceptor() {
+            @Override
+            public okhttp3.Response intercept(Chain chain) throws IOException {
+                Request original = chain.request();
+                HttpUrl originalHttpUrl = original.url();
+                HttpUrl newHttpUrl = originalHttpUrl.newBuilder()
+                        .addQueryParameter("q", queryParameter)
+                        .build();
+
+                Request.Builder requestBuilder = original.newBuilder()
+                        .url(newHttpUrl)
+                        .method(original.method(), original.body());
+
+                return chain.proceed(requestBuilder.build());
+            }
+        };
+        serviceGenerator.getOkHttpClientBuilder().addInterceptor(interceptor);
+        EndpointGithubSearchRepo endpoint =  serviceGenerator.getService();
+        Call<ResponseBody> call = endpoint.searchUsers(queryParameter);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+            }
+        });
+        /**
+         * Duplicando request HTTP
+         * */
+        //Call<ResponseBody> newCall = call.clone();
+
     }
 }

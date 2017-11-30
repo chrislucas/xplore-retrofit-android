@@ -5,7 +5,7 @@ import android.os.Bundle;
 
 import br.com.xplore.xploreretrofit1.http.RequestDynamicURLTest;
 
-public class ActitityTestDynamicURL extends AppCompatActivity {
+public class ActivityTestDynamicURL extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -11,6 +11,7 @@ import retrofit2.Retrofit;
 public class RetrofitServiceGenerator<T> {
 
     private Retrofit.Builder retrofitBuilder;
+    private OkHttpClient.Builder okHttpClientBuilder;
     private T service;
     private static RetrofitServiceGenerator instance;
 
@@ -29,6 +30,10 @@ public class RetrofitServiceGenerator<T> {
         return service;
     }
 
+    public OkHttpClient.Builder getOkHttpClientBuilder() {
+        return okHttpClientBuilder;
+    }
+
     public static void defineBaseURL(String baseURL) {
         instance.retrofitBuilder.baseUrl(baseURL);
     }
@@ -41,7 +46,8 @@ public class RetrofitServiceGenerator<T> {
     }
 
     private static <T> T createServer(Class<T> service) {
-        return instance.retrofitBuilder.client(new OkHttpClient.Builder().build()).build().create(service);
+        instance.okHttpClientBuilder = new OkHttpClient.Builder();
+        return instance.retrofitBuilder.client(instance.okHttpClientBuilder.build()).build().create(service);
     }
 
 }
