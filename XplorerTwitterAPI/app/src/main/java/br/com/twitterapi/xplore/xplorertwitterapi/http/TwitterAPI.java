@@ -16,8 +16,11 @@ import com.twitter.sdk.android.core.services.StatusesService;
 import org.jetbrains.annotations.NotNull;
 
 import br.com.twitterapi.xplore.xplorertwitterapi.R;
+import br.com.twitterapi.xplore.xplorertwitterapi.converters.factories.TokenAuthorizationConverterFactory;
+import br.com.twitterapi.xplore.xplorertwitterapi.converters.services.TokenAuthorizationServiceConverter;
 import br.com.twitterapi.xplore.xplorertwitterapi.endpoints.EndpointTwitterAuthentication;
 import br.com.twitterapi.xplore.xplorertwitterapi.entities.Twitte;
+import br.com.twitterapi.xplore.xplorertwitterapi.entities.TwitterTokenAuthorization;
 import br.com.twitterapi.xplore.xplorertwitterapi.generator.RetrofitServiceGenerator;
 import br.com.twitterapi.xplore.xplorertwitterapi.interceptors.InterceptorTwitterAuthentication;
 import okhttp3.ResponseBody;
@@ -38,7 +41,7 @@ public class TwitterAPI {
     private CallbackAuthorization callbackAuthorization;
 
     public interface CallbackAuthorization {
-        void callback(String response);
+        void callback(TwitterTokenAuthorization tokenAuthorization);
     }
 
     public interface CallbackSearchTwitte {
@@ -76,23 +79,24 @@ public class TwitterAPI {
 
     public void getAuthorization(Context context) {
         RetrofitServiceGenerator<EndpointTwitterAuthentication> serviceGenerator =
-                RetrofitServiceGenerator.newInstance(EndpointTwitterAuthentication.class, GsonConverterFactory.create(),"https://api.twitter.com/");
+                RetrofitServiceGenerator.newInstance(EndpointTwitterAuthentication.class
+                        , new TokenAuthorizationConverterFactory(),"https://api.twitter.com/");
         InterceptorTwitterAuthentication interceptorAuthentication
                 = new InterceptorTwitterAuthentication("pJFxr50vRtaPhBGhRLAzBX5A5"
                 , "Uwe9t434RUktnsGkIe2UQAclM7cj70FAZuHXr4b4RaIspDZ7rp");
         serviceGenerator.addInterceptor(interceptorAuthentication);
-        Call<ResponseBody> call = serviceGenerator.getService().getAuthorization("client_credentials");
-        call.enqueue(new Callback<ResponseBody>() {
+        Call<TwitterTokenAuthorization> call = serviceGenerator.getService().getAuthorization("client_credentials");
+        call.enqueue(new Callback<TwitterTokenAuthorization>() {
             @Override
-            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
+            public void onResponse(@NonNull Call<TwitterTokenAuthorization> call, @NonNull Response<TwitterTokenAuthorization> response) {
                 if(response.isSuccessful()) {
-                    ResponseBody responseBody = response.body();
-                    callbackAuthorization.callback(response.toString());
+                    TwitterTokenAuthorization tokenAuthorization = response.body();
+                    callbackAuthorization.callback(tokenAuthorization);
                 }
             }
 
             @Override
-            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<TwitterTokenAuthorization> call, @NonNull Throwable t) {
                 Log.e("FAILURE_TWITTER_RQ", t.getMessage());
             }
         });

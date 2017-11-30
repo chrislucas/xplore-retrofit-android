@@ -18,8 +18,8 @@ public class ActivityStart extends AppCompatActivity implements TwitterAPI.Callb
     private TwitterTokenAuthorization twitterTokenAuthorization;
     private TwitterAPI twitterAPI;
     @Override
-    public void callback(String response) {
-
+    public void callback(TwitterTokenAuthorization tokenAuthorization) {
+        this.twitterTokenAuthorization = tokenAuthorization;
     }
 
     @Override
@@ -32,8 +32,6 @@ public class ActivityStart extends AppCompatActivity implements TwitterAPI.Callb
         Twitter.initialize(this);
         setContentView(R.layout.activity_start);
         EditText editText = findViewById(R.id.edit_text_search);
-
-
         if(Device.simpleIsConnected(this)) {
             twitterAPI = new TwitterAPI(this);
             twitterAPI.getAuthorization(this);

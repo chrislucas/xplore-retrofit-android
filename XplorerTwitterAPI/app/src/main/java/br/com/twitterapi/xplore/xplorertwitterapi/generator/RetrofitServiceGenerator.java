@@ -1,5 +1,7 @@
 package br.com.twitterapi.xplore.xplorertwitterapi.generator;
 
+import java.util.concurrent.TimeUnit;
+
 import br.com.twitterapi.xplore.xplorertwitterapi.interceptors.InterceptorTwitterAuthentication;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -62,8 +64,17 @@ public class RetrofitServiceGenerator<T> {
 
     private static <T> T createServer(Class<T> service) {
         instance.okHttpClientBuilder = new OkHttpClient.Builder();
-        return instance.retrofitBuilder.client(instance.okHttpClientBuilder.build())
-                .build().create(service);
+        OkHttpClient okHttpClient = instance.defineTimeouts();
+        return instance.retrofitBuilder.client(okHttpClient).build().create(service);
+    }
+
+
+    private OkHttpClient defineTimeouts() {
+        TimeUnit s = TimeUnit.SECONDS;
+        return instance.okHttpClientBuilder.connectTimeout(30, s)
+                .readTimeout(30, s)
+                .writeTimeout(30, s)
+                .build();
     }
 
 }
