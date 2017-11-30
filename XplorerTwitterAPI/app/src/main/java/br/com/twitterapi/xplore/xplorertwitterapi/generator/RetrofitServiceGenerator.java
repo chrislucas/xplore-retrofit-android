@@ -25,10 +25,10 @@ public class RetrofitServiceGenerator<T> {
     public static <T> RetrofitServiceGenerator newInstance(Class<T> clazz, Converter.Factory converterFactory, String baseURL) {
         if(instance == null) {
             instance = new RetrofitServiceGenerator();
-            instance.clazz = clazz;
-            instance.retrofitBuilder = getRetrofitBuilder(converterFactory, baseURL);
-            instance.service = createServer(clazz);
         }
+        instance.clazz = clazz;
+        instance.retrofitBuilder = getRetrofitBuilder(converterFactory, baseURL);
+        instance.service = createServer(clazz);
         return instance;
     }
 

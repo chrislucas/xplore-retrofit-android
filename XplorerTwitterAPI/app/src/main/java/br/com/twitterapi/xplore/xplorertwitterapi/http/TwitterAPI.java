@@ -2,32 +2,30 @@ package br.com.twitterapi.xplore.xplorertwitterapi.http;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
-import com.twitter.sdk.android.core.Twitter;
 import com.twitter.sdk.android.core.TwitterApiClient;
 import com.twitter.sdk.android.core.TwitterAuthToken;
 import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.core.TwitterSession;
-import com.twitter.sdk.android.core.models.Tweet;
 import com.twitter.sdk.android.core.services.StatusesService;
 
 import org.jetbrains.annotations.NotNull;
 
-import br.com.twitterapi.xplore.xplorertwitterapi.R;
+import java.util.List;
+
 import br.com.twitterapi.xplore.xplorertwitterapi.converters.factories.TokenAuthorizationConverterFactory;
-import br.com.twitterapi.xplore.xplorertwitterapi.converters.services.TokenAuthorizationServiceConverter;
+import br.com.twitterapi.xplore.xplorertwitterapi.converters.factories.TweetsConverterFactory;
+import br.com.twitterapi.xplore.xplorertwitterapi.endpoints.EndpointSearchTweets;
 import br.com.twitterapi.xplore.xplorertwitterapi.endpoints.EndpointTwitterAuthentication;
-import br.com.twitterapi.xplore.xplorertwitterapi.entities.Twitte;
+import br.com.twitterapi.xplore.xplorertwitterapi.entities.Tweet;
 import br.com.twitterapi.xplore.xplorertwitterapi.entities.TwitterTokenAuthorization;
 import br.com.twitterapi.xplore.xplorertwitterapi.generator.RetrofitServiceGenerator;
+import br.com.twitterapi.xplore.xplorertwitterapi.interceptors.InterceptorSearchTweet;
 import br.com.twitterapi.xplore.xplorertwitterapi.interceptors.InterceptorTwitterAuthentication;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by r028367 on 29/11/2017.
@@ -44,40 +42,40 @@ public class TwitterAPI {
         void callback(TwitterTokenAuthorization tokenAuthorization);
     }
 
-    public interface CallbackSearchTwitte {
-        void callback(Twitte twitte);
+    public interface CallbackSearchTweets {
+        void callback(Tweet tweet);
+        void callback(List<Tweet> tweets);
     }
 
-    public TwitterAPI(CallbackAuthorization callbackAuthorization) {
+    public TwitterAPI() {
         TwitterCore twitterCore = TwitterCore.getInstance();
         //twitterSession = twitterCore.getSessionManager().getActiveSession();
         //twitterAuthToken = twitterSession.getAuthToken();
         this.apiClient = twitterCore.getApiClient();
         this.statusesService = apiClient.getStatusesService();
-        this.callbackAuthorization = callbackAuthorization;
     }
 
 
     public void find() {
         StatusesService statusesService = apiClient.getStatusesService();
-        Call<Tweet> call = statusesService.show(524971209851543553L, null, null, null);
-        call.enqueue(new Callback<Tweet>() {
+        Call<com.twitter.sdk.android.core.models.Tweet> call = statusesService.show(524971209851543553L, null, null, null);
+        call.enqueue(new Callback<com.twitter.sdk.android.core.models.Tweet>() {
             @Override
-            public void onResponse(@NotNull Call<Tweet> call, @NotNull Response<Tweet> response) {
+            public void onResponse(@NotNull Call<com.twitter.sdk.android.core.models.Tweet> call, @NotNull Response<com.twitter.sdk.android.core.models.Tweet> response) {
                 if(response.isSuccessful()) {
-                    Tweet tweet = response.body();
+                    com.twitter.sdk.android.core.models.Tweet tweet = response.body();
                     Log.i("TWEET_SUCCESS", tweet.toString());
                 }
             }
 
             @Override
-            public void onFailure(@NotNull Call<Tweet> call, @NotNull Throwable t) {
+            public void onFailure(@NotNull Call<com.twitter.sdk.android.core.models.Tweet> call, @NotNull Throwable t) {
                 Log.e("FAILURE_TWITTER_RQ", t.getMessage());
             }
         });
     }
 
-    public void getAuthorization(Context context) {
+    public void getAuthorization(final CallbackAuthorization callbackAuthorization) {
         RetrofitServiceGenerator<EndpointTwitterAuthentication> serviceGenerator =
                 RetrofitServiceGenerator.newInstance(EndpointTwitterAuthentication.class
                         , new TokenAuthorizationConverterFactory(),"https://api.twitter.com/");
@@ -102,7 +100,28 @@ public class TwitterAPI {
         });
     }
 
-    public void searchOnText(String token, String stringSearch) {
+    public void searchOnText(final CallbackSearchTweets callbackSearchTweets, TwitterTokenAuthorization token, String queryString) {
+        RetrofitServiceGenerator serviceGenerator = RetrofitServiceGenerator.newInstance(EndpointSearchTweets.class
+                , new TweetsConverterFactory(), "https://api.twitter.com/");
+        InterceptorSearchTweet interceptor = new InterceptorSearchTweet(token);
+        serviceGenerator.addInterceptor(interceptor);
+
+        EndpointSearchTweets endpointSearchTweets = (EndpointSearchTweets) serviceGenerator.getService();
+
+        Call<List<Tweet>> call = endpointSearchTweets.searchWithQueryString(queryString);
+        call.enqueue(new Callback<List<Tweet>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<Tweet>> call, @NonNull Response<List<Tweet>> response) {
+                if(response.isSuccessful()) {
+                    callbackSearchTweets.callback(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<Tweet>> call, @NonNull Throwable t) {
+                Log.e("EXCEPTION_REQUEST_TWEET", t.getMessage());
+            }
+        });
 
     }
 }

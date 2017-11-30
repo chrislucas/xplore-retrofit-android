@@ -12,8 +12,8 @@ import br.com.twitterapi.xplore.xplorertwitterapi.entities.TwitterTokenAuthoriza
 
 public class TokenAuthorizationConverter {
 
-    public static final String TOKEN_TYPE = "token_type";
-    public static final String ACCESS_TOKEN = "access_token";
+    private static final String TOKEN_TYPE = "token_type";
+    private static final String ACCESS_TOKEN = "access_token";
 
     public TwitterTokenAuthorization fromJsonToTwitterToken(String json) {
         TwitterTokenAuthorization token = new TwitterTokenAuthorization();
