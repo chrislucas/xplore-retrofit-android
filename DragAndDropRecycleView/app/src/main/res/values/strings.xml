@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">DragAndDropRecycleView</string>
+    <string name="title_activity_list_user">Lista de usuários</string>
 </resources>

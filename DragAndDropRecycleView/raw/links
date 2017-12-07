@@ -3,6 +3,11 @@ https://developer.android.com/reference/android/support/v7/widget/helper/ItemTou
 
 https://www.codeproject.com/Articles/1041390/Remember-Drag-and-Drop-Position-with-RecyclerViews
 https://stackoverflow.com/questions/29901044/drag-and-drop-items-in-recyclerview-with-gridlayoutmanager
+https://medium.com/@ipaulpro/drag-and-swipe-with-recyclerview-b9456d2b1aaf
+https://therubberduckdev.wordpress.com/2017/10/24/android-recyclerview-drag-and-drop-and-swipe-to-dismiss/
+
+Lib talvez interessante
+https://github.com/iPaulPro/Android-ItemTouchHelper-Demo
 
 Drag N Drop
 https://developer.android.com/guide/topics/ui/drag-drop.html
