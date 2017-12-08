@@ -14,5 +14,5 @@ public interface ItemTouchHelperAdapter {
      * Metodo que sera executado quando o usuario jogar o item para o lado com a intencao
      * de faze-lo desaparecer.
      * */
-    void onItemDismissed(int position);
+    void onItemSwiped(int position);
 }

@@ -17,7 +17,6 @@ import br.com.draganddrop.xplore.draganddroprecycleview.recyclerview.callback.Ac
 
 public class ViewHolderListPersona extends AbstractViewHolder implements ItemTouchHelperViewHolder {
     private TextView name, email, phone;
-
     private ImageView imageView;
     public ViewHolderListPersona(View itemView) {
         super(itemView);

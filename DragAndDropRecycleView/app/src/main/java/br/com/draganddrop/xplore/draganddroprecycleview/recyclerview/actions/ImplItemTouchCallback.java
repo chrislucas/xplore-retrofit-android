@@ -1,13 +1,11 @@
 package br.com.draganddrop.xplore.draganddroprecycleview.recyclerview.actions;
 
 import android.graphics.Canvas;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 
 import br.com.draganddrop.xplore.draganddroprecycleview.recyclerview.viewholder.AbstractViewHolder;
-import br.com.draganddrop.xplore.draganddroprecycleview.recyclerview.viewholder.ViewHolderListPersona;
 
 /**
  * Created by r028367 on 08/12/2017.
@@ -39,8 +37,25 @@ public class ImplItemTouchCallback extends ItemTouchHelper.Callback {
 
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-        mItemTouchHelperAdapter.onItemDismissed(viewHolder.getAdapterPosition());
-        Log.i("ON_SWIPED", "ELEMENTO DA LISTA SENDO DESLIZADO");
+        mItemTouchHelperAdapter.onItemSwiped(viewHolder.getAdapterPosition());
+        Log.i("ON_SWIPED"
+                , String.format("ELEMENTO DA LISTA SENDO DESLIZADO PARA %d", direction));
+    }
+
+    @Override
+    public void onChildDraw(Canvas c, RecyclerView recyclerView
+            , RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+        Log.i("ON_SWIPED_CHILD_DRAW", String.format("REDESENHANDO A LISTA em (%f, %f)", dX, dY));
+        if(actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
+            if(viewHolder instanceof ItemTouchHelperViewHolder) {
+                AbstractViewHolder viewHolderListPersona = (AbstractViewHolder) viewHolder;
+                viewHolderListPersona.getItemView().setTranslationX(dX);
+            }
+        }
+        else {
+            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+        }
+
     }
 
     private void logActionStateOnSelectedChanged(int actionState) {
@@ -70,8 +85,7 @@ public class ImplItemTouchCallback extends ItemTouchHelper.Callback {
         logActionStateOnSelectedChanged(actionState);
         if(actionState != ItemTouchHelper.ACTION_STATE_IDLE) {
             if(viewHolder instanceof ItemTouchHelperViewHolder) {
-                ItemTouchHelperViewHolder touchHelperViewHolder
-                        = (ItemTouchHelperViewHolder) viewHolder;
+                ItemTouchHelperViewHolder touchHelperViewHolder = (ItemTouchHelperViewHolder) viewHolder;
                 touchHelperViewHolder.selectedState();
             }
         }
@@ -96,20 +110,5 @@ public class ImplItemTouchCallback extends ItemTouchHelper.Callback {
         return true;
     }
 
-    @Override
-    public void onChildDraw(Canvas c, RecyclerView recyclerView
-            , RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
-        if(actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
-            if(viewHolder instanceof ItemTouchHelperViewHolder) {
-                AbstractViewHolder viewHolderListPersona = (AbstractViewHolder) viewHolder;
-                viewHolderListPersona.getItemView().setTranslationX(dX);
-                //viewHolderListPersona.getItemView().setTranslationY(dY);
-            }
-        }
 
-        else {
-            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
-        }
-
-    }
 }

@@ -26,13 +26,10 @@ import br.com.draganddrop.xplore.draganddroprecycleview.recyclerview.viewholder.
  * Created by r028367 on 07/12/2017.
  */
 
-public class AdapterListPersona extends RecyclerView.Adapter<ViewHolderListPersona>
-    implements ItemTouchHelperAdapter{
-
+public class AdapterListPersona extends RecyclerView.Adapter<ViewHolderListPersona> implements ItemTouchHelperAdapter {
     private List<Persona> personas;
     private ActionsOnItemRecyclerView<Persona> actionsOnItemRecyclerView;
     private Context context;
-
     public AdapterListPersona(List<Persona> personas, ActionsOnItemRecyclerView<Persona> actionsOnItemRecyclerView) {
         this.personas = personas;
         this.actionsOnItemRecyclerView = actionsOnItemRecyclerView;
@@ -75,18 +72,26 @@ public class AdapterListPersona extends RecyclerView.Adapter<ViewHolderListPerso
         return personas.size();
     }
 
+    /**
+     * {@link ItemTouchHelperAdapter}
+     * */
     @Override
     public void onItemMove(int newPosition, int lastPosition) {
-        Collections.swap(personas, newPosition, lastPosition);
-        actionsOnItemRecyclerView.onListChange(personas);
-        notifyItemChanged(newPosition, lastPosition);
         Log.i("SWAP", String.format("%d,%d\n", newPosition, lastPosition));
         Log.i("SWAP", String.format("%s\n%s", personas.get(newPosition).toString()
                 , personas.get(lastPosition).toString()));
+        Collections.swap(personas, newPosition, lastPosition);
+        notifyItemMoved(newPosition, lastPosition);
+        actionsOnItemRecyclerView.onListChange(personas);
     }
 
+    /**
+     * */
     @Override
-    public void onItemDismissed(int position) {
+    public void onItemSwiped(int position) {
         Log.i("ON_ITEM_DISMISSED", personas.get(position).toString());
+        personas.remove(position);
+        notifyItemRemoved(position);
+        actionsOnItemRecyclerView.onListChange(personas);
     }
 }
