@@ -12,3 +12,27 @@ https://github.com/iPaulPro/Android-ItemTouchHelper-Demo
 Drag N Drop
 https://developer.android.com/guide/topics/ui/drag-drop.html
 http://www.vogella.com/tutorials/AndroidDragAndDrop/article.html
+
+
+swipe dismiss item recyclerview -lib -library
+http://camposha.info/source/android-swipe-dismiss-recyclerview-remove-items-itemtouchhelper-video/
+http://www.androhub.com/swipe-dismiss-recyclerview/
+
+
+ItemTouchHelper
+https://developer.android.com/reference/android/support/v7/widget/helper/ItemTouchHelper.html
+https://medium.com/@fanfatal/android-swipe-menu-with-recyclerview-8f28a235ff28
+https://medium.com/@ipaulpro/drag-and-swipe-with-recyclerview-b9456d2b1aaf
+https://medium.com/@ipaulpro/drag-and-swipe-with-recyclerview-6a6f0c422efd
+
+swipe item recyclerview
+https://www.learn2crack.com/2016/02/custom-swipe-recyclerview.html
+https://www.androidhive.info/2017/09/android-recyclerview-swipe-delete-undo-using-itemtouchhelper/
+http://tutorialsbuzz.com/2016/12/android-swipe-recyclerview-items-using-itemtouchhelper.html
+https://mobikul.com/make-recycler-view-item-swipe-partially/
+
+recyclerview addItemDecoration
+https://www.bignerdranch.com/blog/a-view-divided-adding-dividers-to-your-recyclerview-with-itemdecoration/
+https://bignerdranch.github.io/simple-item-decoration/
+https://blog.davidmedenjak.com/android/2015/11/10/recyclerview-with-decorations-basic-guide.html
+https://gist.github.com/polbins/e37206fbc444207c0e92
